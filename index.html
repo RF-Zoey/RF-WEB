@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BlueWave — Informational Site</title>
+  <meta name="description" content="A clean, light-blue themed informational website with smooth animations and transitions.">
+  <style>
+    /* ----------------------
+       Theme & Variables
+       ---------------------- */
+    :root{
+      --bg:#eef8ff;
+      --card:#ffffff;
+      --muted:#6b7b8c;
+      --accent:#79c2ff;
+      --accent-2:#4aa3e0;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 24px rgba(30,60,90,0.08);
+      --radius:14px;
+      --max-width:1100px;
+      --fw-regular: 400;
+      --fw-medium: 600;
+      --fw-bold: 700;
+    }
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(120,185,255,0.06), transparent), var(--bg);
+      color:#123;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      scroll-behavior:smooth;
+      overflow-x:hidden;
+    }
+
+    /* Nice container */
+    .container{max-width:var(--max-width);margin:0 auto;padding:48px 24px}
+
+    /* Loading overlay */
+    .loader-overlay{
+      position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(230,246,255,0.85));backdrop-filter: blur(4px);z-index:9999;transition:opacity .6s ease,visibility .6s ease;}
+    .loader-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+    .loader{
+      width:110px;height:110px;border-radius:16px;background:linear-gradient(135deg,var(--card),rgba(255,255,255,0.7));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px
+    }
+    .spinner{width:48px;height:48px;border-radius:50%;border:4px solid rgba(74,163,224,0.16);border-top-color:var(--accent-2);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loader p{margin:10px 0 0;font-weight:600;color:var(--muted);letter-spacing:0.4px}
+
+    /* Header */
+    header{
+      position:relative;overflow:clip;border-radius:20px;margin:24px auto 40px;max-width:1200px;background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(240,250,255,0.7));box-shadow:var(--shadow);
+    }
+    .hero{
+      display:grid;grid-template-columns:1fr 420px;gap:40px;align-items:center;padding:48px;min-height:320px;
+    }
+
+    /* Hero video background */
+    .hero-image{
+      position:relative;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(25,60,100,0.06);min-height:220px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;align-items:center;justify-content:center;padding:0;
+    }
+    .hero-image video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:12px;
+      display:block;
+      transform:translateY(6px);
+      transition: transform .8s cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* Animated blobs */
+    .blob{position:absolute;border-radius:999px;filter: blur(36px);opacity:0.6;mix-blend-mode:screen;transform-origin:center}
+    .blob.b1{width:220px;height:220px;right:-40px;top:-60px;background:linear-gradient(180deg,#bfe9ff,#86d3ff);animation:float 10s ease-in-out infinite}
+    .blob.b2{width:160px;height:160px;left:-40px;bottom:-40px;background:linear-gradient(180deg,#9fe1ff,#6fbdf2);animation:float 12s ease-in-out infinite}
+    @keyframes float{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-18px) rotate(8deg)}100%{transform:translateY(0) rotate(0)}}
+
+    /* Headline */
+    h1{font-size:clamp(26px,4vw,40px);margin:0 0 8px;line-height:1.02}
+    .subtitle{font-size:16px;color:var(--muted);max-width:60%;}
+    .typewriter{display:inline-block;border-right:2px solid rgba(0,0,0,0.08);padding-right:6px;animation:caret 1s steps(1) infinite}
+    @keyframes caret{50%{border-color:transparent}}
+
+    /* nav */
+    nav{display:flex;gap:12px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid rgba(15,40,70,0.04);cursor:pointer;transition:all .35s;user-select:none}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:0;box-shadow:0 8px 18px rgba(64,150,210,0.16)}
+    .btn.ghost{background:transparent}
+    .btn:hover{transform:translateY(-4px)}
+
+    /* Social buttons */
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid rgba(15,40,70,0.08);
+      background: var(--card);
+      color: var(--accent-2);
+      transition: all 0.35s;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .social-btn:hover {
+      transform: translateY(-3px);
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 8px 18px rgba(64,150,210,0.16);
+    }
+
+    /* grid cards */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .card{background:var(--card);padding:20px;border-radius:14px;box-shadow:var(--shadow);transition:transform .5s cubic-bezier(.2,.9,.2,1), box-shadow .4s;will-change:transform;opacity:0;transform:translateY(18px);}
+    .card.visible{opacity:1;transform:none}
+    .card:hover{transform:translateY(-10px) rotateZ(.2deg);box-shadow:0 18px 40px rgba(30,70,120,0.08)}
+    .card h3{margin:0 0 8px}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+
+    /* Scroll progress */
+    .progress-wrap{position:fixed;left:16px;top:16px;width:6px;height:140px;background:rgba(255,255,255,0.6);border-radius:6px;box-shadow:var(--shadow);overflow:hidden}
+    .progress{position:absolute;left:0;bottom:0;width:100%;height:0;background:linear-gradient(180deg,var(--accent-2),var(--accent));transition:height .12s linear}
+
+    /* footer */
+    footer{padding:36px 24px;margin-top:60px;text-align:center;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;gap:20px}
+      .subtitle{max-width:100%}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      header{border-radius:12px}
+    }
+
+    /* ----------------------
+   Mobile-friendly header adjustments
+   ---------------------- */
+@media (max-width:980px){
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 32px;
+  }
+  .subtitle {
+    max-width: 100%;
+  }
+  .grid { grid-template-columns: repeat(2,1fr); }
+}
+
+@media (max-width:640px){
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    gap: 24px;
+  }
+  .hero-image {
+    min-height: 180px;
+  }
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  nav > div:last-child { /* buttons container */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .subtitle {
+    font-size: 14px;
+    max-width: 100%;
+  }
+  h1 {
+    font-size: clamp(22px, 6vw, 32px);
+  }
+}
+
+@media (max-width:480px){
+  nav > div:first-child {
+    gap: 8px;
+  }
+  nav > div:first-child div {
+    font-size: 12px;
+  }
+  nav > div:first-child div:first-child {
+    font-weight: 600;
+  }
+}
+
+    .typewriter-wrapper {
+  display: inline-block;
+  width: 22ch; /* Adjust to fit the longest phrase */
+}
+
+.typewriter {
+  display: inline-block;
+  border-right: 2px solid rgba(0,0,0,0.08);
+  padding-right: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+    /* small motion helpers */
+    .reveal-up{opacity:0;transform:translateY(18px);transition:all .7s cubic-bezier(.2,.9,.2,1)}
+    .reveal-up.in{opacity:1;transform:none}
+
+    /* link subtle underline animation */
+    a.inline{position:relative;color:var(--accent-2);text-decoration:none}
+    a.inline::after{content:'';position:absolute;left:0;bottom:-2px;height:2px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .35s}
+    a.inline:hover::after{width:100%}
+
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Loading Website…</p>
+    </div>
+  </div>
+
+  <!-- Scroll progress indicator -->
+  <div class="progress-wrap" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
+
+<header class="reveal-up" id="main-header">
+  <div class="hero container">
+    <div>
+      <nav style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:white;font-weight:700;">RF</div>
+          <div>
+            <div style="font-weight:700">Rightful Family</div>
+            <div style="font-size:12px;color:var(--muted)">Gaming • Community • Fun</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn ghost" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">Games</button>
+          <button class="btn primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get in touch</button>
+        </div>
+      </nav>
+
+<h1>Rightful Family — 
+  <span class="typewriter-wrapper">
+    <span class="typewriter" id="typewriter">connect, compete, belong</span>
+  </span>
+</h1>
+      <p class="subtitle" id="subtitle">We’re a welcoming gaming community for adult players, founded by Zoey on October 28, 2024. Join us to make real friendships while enjoying your favorite games!</p>
+
+      <div style="display:flex;gap:12px;margin-top:20px">
+        <a class="btn primary" href="https://discord.gg/rfzoey" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Join Now</a>
+        <button class="btn" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Learn more</button>
+      </div>
+    </div>
+
+    <div class="hero-image" aria-hidden="true">
+      <video autoplay muted loop playsinline>
+        <source src="RF-ANIMATED.mp4" type="video/mp4">
+      </video>
+      <div class="blob b1" aria-hidden="true"></div>
+      <div class="blob b2" aria-hidden="true"></div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section id="about" style="margin-top:10px">
+    <h2 style="margin:0 0 18px">About Rightful Family</h2>
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px;background:linear-gradient(180deg,rgba(255,255,255,0.9),white);padding:18px;border-radius:12px;box-shadow:var(--shadow)"> 
+        <h3 style="margin-top:0">Who We Are</h3>
+        <p style="color:var(--muted)">Rightful Family is a gaming community founded on October 28, 2024, led by Zoey. We’re here to offer a welcoming space where adult gamers can enjoy connecting and competing in their favorite games without the hassle of a younger crowd.</p>
+      </div>
+      <div style="flex:1;min-width:260px;">
+        <div class="card reveal-up">
+          <h3>Our Goals</h3>
+          <p>Our goal is to keep things fun and active, so you can hop on whenever, find people to game with, and start building real connections. We’re all about making friendships that go beyond the game—join us and make Rightful Family your go-to gaming crew!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="games" style="margin-top:40px">
+    <h2 style="margin:0 0 18px">What Games We Play</h2>
+    <div class="grid">
+      <article class="card reveal-up">
+        <h3>Clash of Clans</h3>
+        <p>Casual and competitive play available. Build, defend, and connect with the community.</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>Apex Legends</h3>
+        <p>Team up with others for fun or competitive matches in this fast-paced shooter.</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>Rainbow Six Siege</h3>
+        <p>Strategize and coordinate with other adults in our tactical shooter sessions.</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>Minecraft</h3>
+        <p>Create, explore, and collaborate in a relaxed or competitive environment.</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>Pokémon GO</h3>
+        <p>Join our events, raids, and community challenges in the world of Pokémon.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="schedule" style="margin-top:40px">
+    <h2 style="margin:0 0 18px">Stream Schedule</h2>
+    <div class="grid">
+      <article class="card reveal-up">
+        <h3>TikTok</h3>
+        <p>9PM EST Monday</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>Twitch</h3>
+        <p>9PM EST Tuesday</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>TikTok</h3>
+        <p>9PM EST Wednesday</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>TikTok</h3>
+        <p>9PM EST Thursday</p>
+      </article>
+      <article class="card reveal-up">
+        <h3>TikTok</h3>
+        <p>9:30PM EST Friday</p>
+      </article>
+    </div>
+  </section>
+
+<section id="contact" style="margin-top:40px">
+  <h2 style="margin:0 0 18px">Contact & Follow Us</h2>
+  <div class="card reveal-up" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px">
+      <strong>Follow us</strong>
+<!-- Social buttons -->
+<div style="display:flex;gap:12px;margin-top:6px">
+  <!-- YouTube -->
+  <a href="https://youtube.com/@rf-zoey?si=ARTQNgPlTG-fEqky" target="_blank" class="social-btn" aria-label="YouTube">
+    <i class="fab fa-youtube"></i>
+  </a>
+
+  <!-- TikTok -->
+  <a href="https://www.tiktok.com/@fallingskies821?_t=ZT-8zbv3cUPH94&_r=1" target="_blank" class="social-btn" aria-label="TikTok">
+    <i class="fab fa-tiktok"></i>
+  </a>
+
+  <!-- Twitch -->
+  <a href="https://twitch.tv/rfzoey" target="_blank" class="social-btn" aria-label="Twitch">
+    <i class="fab fas fa-twitch"></i>
+  </a>
+
+  <!-- Discord -->
+  <a href="https://discord.gg/rfzoey" target="_blank" class="social-btn" aria-label="Discord">
+    <i class="fab fa-discord"></i>
+  </a>
+</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div style="max-width:var(--max-width);margin:0 auto;padding:18px 24px">© <span id="year"></span> Rightful Family — Join our gaming community. • <a class="inline" href="https://discord.gg/rfzoey">Discord</a></div>
+</footer>
+
+  <script>
+    function whenReady(){
+      return new Promise(res => {
+        if (document.readyState === 'complete') return res();
+        window.addEventListener('load', () => setTimeout(res, 420));
+      })
+    }
+
+    (async function(){
+      await whenReady();
+      const loader = document.getElementById('loader');
+      loader.classList.add('hidden');
+
+      const heroVideo = document.querySelector('.hero-image video');
+      function onScroll(){
+        const sc = window.scrollY;
+        heroVideo.style.transform = `translateY(${Math.max(-8, Math.min(12, sc * 0.02))}px)`;
+
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+        document.getElementById('progress').style.height = pct + '%';
+      }
+      window.addEventListener('scroll', onScroll, {passive:true});
+      onScroll();
+
+      const revealEls = document.querySelectorAll('.reveal-up');
+      const revealObserver = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if (e.isIntersecting){
+            e.target.classList.add('in');
+            if (e.target.classList.contains('card')) e.target.classList.add('visible');
+          }
+        })
+      },{threshold:0.12});
+      revealEls.forEach(el=>revealObserver.observe(el));
+
+      const cards = document.querySelectorAll('.grid .card');
+      cards.forEach((c,i)=>{ setTimeout(()=>c.classList.add('visible'), 200 + i*120) });
+
+      const phrases = ["concise, modern, delightful","fast and friendly","easy to read","made with care"];
+      let idx = 0;
+      const tw = document.getElementById('typewriter');
+      function typePhrase(p){
+        tw.textContent = '';
+        let i = 0;
+        const t = setInterval(()=>{
+          tw.textContent += p[i++] || '';
+          if (i>p.length){ clearInterval(t); setTimeout(()=>{ erase(); }, 1200) }
+        }, 36);
+        function erase(){
+          let j = p.length;
+          const e = setInterval(()=>{
+            tw.textContent = p.slice(0,j--);
+            if (j<0){ clearInterval(e); idx=(idx+1)%phrases.length; setTimeout(()=>typePhrase(phrases[idx]),240) }
+          },18);
+        }
+      }
+      typePhrase(phrases[idx]);
+
+      const hero = document.querySelector('.hero-image');
+      hero.addEventListener('mousemove', (ev)=>{
+        const r = hero.getBoundingClientRect();
+        const dx = (ev.clientX - (r.left + r.width/2)) / r.width;
+        const dy = (ev.clientY - (r.top + r.height/2)) / r.height;
+        heroVideo.style.transform = `translate(${dx*6}px, ${Math.max(-8, Math.min(12, window.scrollY*0.02 + dy*8))}px) scale(1.01)`;
+      });
+      hero.addEventListener('mouseleave', ()=> heroVideo.style.transform = `translateY(${Math.max(-8, Math.min(12, window.scrollY*0.02))}px) scale(1)`);
+
+      window.addEventListener('keydown', (e)=>{ if (e.key.toLowerCase()==='f'){ document.querySelector('.btn.primary').focus(); } });
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (prefersReduced.matches){ document.querySelectorAll('*').forEach(el=>el.style.transition = 'none'); }
+  </script>
+</body>
+</html>
